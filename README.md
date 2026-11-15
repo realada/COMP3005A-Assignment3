@@ -1,0 +1,1 @@
+Copy info in .env.example into a .env file
