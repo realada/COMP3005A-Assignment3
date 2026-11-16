@@ -125,51 +125,58 @@ def delete_student():
 
 # App GUI
 window = tk.Tk()
-window.title("")
+window.title("Students Database")
 window.config(padx=50, pady=50)
+
+## Table View
+table_title = tk.Label(text="STUDENTS", font=("Arial", 20))
+table_title.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
 columns = ("student_id", "first_name", "last_name", "email", "enrollment_date")
 tree = ttk.Treeview(window, columns=columns, show="headings")
 
-tree.heading("student_id", text="Student id")
+tree.heading("student_id", text="Student ID")
 tree.heading("first_name", text="First name")
 tree.heading("last_name", text="Last name")
 tree.heading("email", text="Email")
 tree.heading("enrollment_date", text="Enrollment date")
-tree.grid(row=0, column=0, columnspan=2, sticky="nsew")
+tree.grid(row=1, column=0, columnspan=2, sticky="nsew")
 
 draw_table()
 
-#Add new Student form
+## Add new Student form
 fname_label = tk.Label(text="First name")
-fname_label.grid(row=1, column=0, sticky="e", pady=2)
+fname_label.grid(row=2, column=0, sticky="e", pady=2)
 fname_entry = tk.Entry(width=25)
-fname_entry.grid(row=1, column=1, sticky="w")
+fname_entry.grid(row=2, column=1, sticky="w")
 
 lname_label = tk.Label(text="Last name")
-lname_label.grid(row=2, column=0, sticky="e", pady=2)
+lname_label.grid(row=3, column=0, sticky="e", pady=2)
 lname_entry = tk.Entry(width=25)
-lname_entry.grid(row=2, column=1, sticky="w")
+lname_entry.grid(row=3, column=1, sticky="w")
 
 email_label = tk.Label(text="Email:")
-email_label.grid(row=3, column=0, sticky="e", pady=2)
+email_label.grid(row=4, column=0, sticky="e", pady=2)
 email_entry = tk.Entry(width=25)
-email_entry.grid(row=3, column=1, sticky="w")
+email_entry.grid(row=4, column=1, sticky="w")
 
 date_label = tk.Label(text="Enrollment date:")
-date_label.grid(row=4, column=0, sticky="e", pady=2)
+date_label.grid(row=5, column=0, sticky="e", pady=2)
 
 calendar = DateEntry(width=12, background="darkblue", foreground="white", borderwidth=2, date_pattern="yyyy-mm-dd")
-calendar.grid(row=4, column=1, sticky="w")
+calendar.grid(row=5, column=1, sticky="w")
 
-add_student_button = tk.Button(text="Add student", command=add_student)
-add_student_button.grid(row=5, column=0, pady=5)
+button_frame = tk.Frame(window)
+button_frame.grid(row=6, column=0, columnspan=2, pady=10)
 
-update_email_button = tk.Button(text="Update email", command=update_email)
-update_email_button.grid(row=5, column=1, pady=5)
+add_student_button = tk.Button(button_frame, text="Add student", command=add_student, width=20)
+add_student_button.grid(row=0, column=0, padx=2)
 
-delete_student_button = tk.Button(text="Delete student", command=delete_student)
-delete_student_button.grid(row=5, column=2, pady=5)
+update_email_button = tk.Button(button_frame, text="Update email", command=update_email, width=20)
+update_email_button.grid(row=0, column=1, padx=2)
+
+delete_student_button = tk.Button(button_frame, text="Delete student", command=delete_student, width=20)
+delete_student_button.grid(row=0, column=2, padx=2)
 
 
 window.protocol("WM_DELETE_WINDOW", on_close)
