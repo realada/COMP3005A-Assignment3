@@ -1,2 +1,3 @@
 .env
 dev_setup.sql
+__pycache__/
