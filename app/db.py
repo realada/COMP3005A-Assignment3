@@ -31,7 +31,7 @@ def restoreTable() -> None:
 # getAllStudents(): Retrieves and displays all records from the students table.
 def getAllStudents() -> list[tuple]:
     with conn.cursor() as cur:
-        cur.execute("SELECT * FROM students")
+        cur.execute("SELECT * FROM students ORDER BY student_id")
         rows = cur.fetchall()
     conn.rollback()
     return rows

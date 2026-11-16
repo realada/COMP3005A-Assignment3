@@ -4,7 +4,7 @@ Name: Chizurum Oluigbo\
 Student #: 101361390\
 SECTION: COMP3005A
 
-**Link to video description:**  
+**Link to video description:**  https://drive.google.com/file/d/1gppM3wNR6fE0LQVYIXbB2tu4zAnyuRR-/view?usp=drive_link 
 
 ## Setting up Postgres connection
 - In pgAdmin, right-click **Databases** -> **Create** -> **Database...** and create an empty database named `assignment3`.
