@@ -1,7 +1,10 @@
+from datetime import date
 import db
 
-students = db.get_all_students()
+db.restoreTable()
+db.addStudent("Test", "One", "testone@gmail.com", date(2026, 11, 15))
 
+students = db.getAllStudents()
 for student in students:
     print(student)
 

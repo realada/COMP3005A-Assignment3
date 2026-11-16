@@ -1,11 +1,10 @@
 import os
 from dotenv import load_dotenv
 import psycopg2
+from pathlib import Path
 from datetime import date
 
 load_dotenv()
-
-
 
 def get_connection():
     return psycopg2.connect(
@@ -18,8 +17,18 @@ def get_connection():
 
 conn = get_connection()
 
+def restoreTable() -> None:
+    sql = (Path(__file__).parent.parent / "students.sql").read_text()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+
 # getAllStudents(): Retrieves and displays all records from the students table.
-def get_all_students() -> list[tuple]:
+def getAllStudents() -> list[tuple]:
     with conn.cursor() as cur:
         cur.execute("SELECT * FROM students")
         rows = cur.fetchall()
@@ -28,7 +37,17 @@ def get_all_students() -> list[tuple]:
 
 # addStudent(first_name, last_name, email, enrollment_date): Inserts a new student record into the students table.
 def addStudent(first_name: str, last_name: str, email: str, enrollment_date: date | None = None) -> None:
-    pass
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO students (first_name, last_name, email, enrollment_date) "
+                "VALUES (%s, %s, %s, %s)",
+                (first_name, last_name, email, enrollment_date)
+                )
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
 # updateStudentEmail(student_id, new_email): Updates the email address for a student with the specified student_id.
 def updateStudentEmail(student_id: int, new_email: str) -> None:
     pass
