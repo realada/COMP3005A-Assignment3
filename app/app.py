@@ -7,6 +7,7 @@ import db
 db.restoreTable()
 
 #Every time user added, table is redrawn (ie db.getAllUsers() called)
+#message box when email updated or to ask if user should be student is deleted
 def draw_table():
     for row in tree.get_children():
         tree.delete(row)
@@ -17,11 +18,16 @@ def show_date():
     selected = calendar.get_date()
     date_label.config(text=f"Selected Date: {selected}")
 
-# def get_selected_row():
-#     selected = tree.focus()
-#     if selected:
-#         row = tree.item(selected)
-#message box when email updated or when a student is deleted
+def get_selected_row():
+    selected = tree.selection()
+
+    if not selected:
+        return
+
+    row = tuple(tree.item(selected[0])['values'])
+    print(row)
+    return row
+
 def on_close():
     db.close()
     window.destroy()
@@ -43,6 +49,12 @@ def add_student():
     fname_entry.delete(0, tk.END)
     lname_entry.delete(0, tk.END)
     email_entry.delete(0, tk.END)
+    draw_table()
+
+def delete_student():
+    row = get_selected_row()
+    student_id = row[0]
+    db.deleteStudent(student_id=student_id)
     draw_table()
 
 window = tk.Tk()
@@ -74,7 +86,7 @@ lname_entry.grid(row=2, column=1, sticky="w")
 
 email_label = tk.Label(text="Email:")
 email_label.grid(row=3, column=0, sticky="e", pady=2)
-email_entry = tk.Entry(width=21)
+email_entry = tk.Entry(width=25)
 email_entry.grid(row=3, column=1, sticky="w")
 
 date_label = tk.Label(text="Enrollment date:")
@@ -83,8 +95,11 @@ date_label.grid(row=4, column=0, sticky="e", pady=2)
 calendar = DateEntry(width=12, background="darkblue", foreground="white", borderwidth=2, date_pattern="yyyy-mm-dd")
 calendar.grid(row=4, column=1, sticky="w")
 
-add_button = tk.Button(text="Add student", command=add_student)
-add_button.grid(row=5, column=0, pady=10)
+add_student_button = tk.Button(text="Add student", command=add_student)
+add_student_button.grid(row=5, column=0, pady=10)
+
+delete_student_button = tk.Button(text="Delete student", command=delete_student)
+delete_student_button.grid(row=5, column=1, pady=10)
 
 window.protocol("WM_DELETE_WINDOW", on_close)
 window.mainloop()
