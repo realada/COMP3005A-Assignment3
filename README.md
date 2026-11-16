@@ -2,7 +2,7 @@
 
 Name: Chizurum Oluigbo\
 Student #: 101361390\
-SECTION: COMP3005A\
+SECTION: COMP3005A
 
 Link to video description: 
 
