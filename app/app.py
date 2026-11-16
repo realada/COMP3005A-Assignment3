@@ -1,6 +1,6 @@
 from datetime import date
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, simpledialog
 from tkcalendar import DateEntry
 import db
 
@@ -44,12 +44,59 @@ def add_student():
         return
     try: 
         db.addStudent(first_name=first_name, last_name=last_name, email=email, enrollment_date=enrollment_date)
+    except ValueError as e:
+        messagebox.showerror("Duplicate user", str(e))
+        fname_entry.delete(0, tk.END)
+        lname_entry.delete(0, tk.END)
+        email_entry.delete(0, tk.END)
+        return
     except Exception as e:
         messagebox.showerror("Could not add student", str(e))
         return
 
     fname_entry.delete(0, tk.END)
     lname_entry.delete(0, tk.END)
+    email_entry.delete(0, tk.END)
+    draw_table()
+
+def update_email():
+    row = get_selected_row()
+    if row is None:
+        messagebox.showinfo("No selection", "Please select a student first.")
+        return
+
+
+    student_id = int(row[0])
+    new_email = simpledialog.askstring(
+        "Update email",
+        f"New email for {row[1]} {row[2]}",
+        initialvalue=row[3],
+        parent=window,
+    )
+
+    if new_email is None:
+        return
+    new_email = new_email.strip()
+    if not new_email:
+        messagebox.showinfo("Missing email", "Email can't be empty.")
+        return
+
+    if not messagebox.askyesno("Confirm", f"Change email {row[3]} with {new_email}?"):
+        return
+
+    try:
+        updated = db.updateStudentEmail(student_id=student_id, new_email=new_email)
+    except ValueError as e:
+        messagebox.showerror("Duplicate email", str(e))
+        email_entry.delete(0, tk.END)
+        return
+    except Exception as e:
+        messagebox.showerror("Could not update email", str(e))
+        return
+
+    if not updated:
+        messagebox.showinfo("Not found", "That student does not exist.")
+
     email_entry.delete(0, tk.END)
     draw_table()
 
@@ -66,6 +113,7 @@ def delete_student():
         deleted = db.deleteStudent(student_id=student_id)
     except Exception as e:
         messagebox.showerror("Could not delete", str(e))
+        return
 
     if not deleted:
         messagebox.showinfo("Not found", "That student no longer exists.")
@@ -115,10 +163,14 @@ calendar = DateEntry(width=12, background="darkblue", foreground="white", border
 calendar.grid(row=4, column=1, sticky="w")
 
 add_student_button = tk.Button(text="Add student", command=add_student)
-add_student_button.grid(row=5, column=0, pady=10)
+add_student_button.grid(row=5, column=0, pady=5)
+
+update_email_button = tk.Button(text="Update email", command=update_email)
+update_email_button.grid(row=5, column=1, pady=5)
 
 delete_student_button = tk.Button(text="Delete student", command=delete_student)
-delete_student_button.grid(row=5, column=1, pady=10)
+delete_student_button.grid(row=5, column=2, pady=5)
+
 
 window.protocol("WM_DELETE_WINDOW", on_close)
 window.mainloop()

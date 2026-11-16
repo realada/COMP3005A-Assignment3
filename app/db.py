@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import psycopg2
+from psycopg2 import errors
 from pathlib import Path
 from datetime import date
 
@@ -45,9 +46,13 @@ def addStudent(first_name: str, last_name: str, email: str, enrollment_date: dat
                 (first_name, last_name, email, enrollment_date)
                 )
         conn.commit()
+    except errors.UniqueViolation:
+        conn.rollback()
+        raise ValueError("The student already exists")
     except Exception:
         conn.rollback()
         raise
+
 # updateStudentEmail(student_id, new_email): Updates the email address for a student with the specified student_id.
 def updateStudentEmail(student_id: int, new_email: str) -> bool:
     try:
@@ -61,6 +66,9 @@ def updateStudentEmail(student_id: int, new_email: str) -> bool:
             updated = cur.rowcount > 0
         conn.commit()
         return updated
+    except errors.UniqueViolation:
+        conn.rollback()
+        raise ValueError("That email is already in use.")
     except Exception:
         conn.rollback()
         raise
