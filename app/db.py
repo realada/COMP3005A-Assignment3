@@ -41,7 +41,7 @@ def addStudent(first_name: str, last_name: str, email: str, enrollment_date: dat
         with conn.cursor() as cur:
             cur.execute(
                 "INSERT INTO students (first_name, last_name, email, enrollment_date) "
-                "VALUES (%s, %s, %s, %s)",
+                "VALUES (%s, %s, %s, %s);",
                 (first_name, last_name, email, enrollment_date)
                 )
         conn.commit()
@@ -49,12 +49,37 @@ def addStudent(first_name: str, last_name: str, email: str, enrollment_date: dat
         conn.rollback()
         raise
 # updateStudentEmail(student_id, new_email): Updates the email address for a student with the specified student_id.
-def updateStudentEmail(student_id: int, new_email: str) -> None:
-    pass
+def updateStudentEmail(student_id: int, new_email: str) -> bool:
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE students "
+                "SET email = %s "
+                "WHERE student_id = %s;",
+                (new_email, student_id),
+            )
+            updated = cur.rowcount > 0
+        conn.commit()
+        return updated
+    except Exception:
+        conn.rollback()
+        raise
 
 # deleteStudent(student_id): Deletes the record of the student with the specified student_id.
-def deleteStudent(student_id: int):
-    pass
+def deleteStudent(student_id: int) -> bool:
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM students "
+                "WHERE student_id = %s;",
+                (student_id,),
+            )
+            deleted = cur.rowcount > 0
+        conn.commit()
+        return deleted
+    except Exception:
+        conn.rollback()
+        raise
 
 def close():
     conn.close()
