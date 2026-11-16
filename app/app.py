@@ -1,25 +1,47 @@
 from datetime import date
+import tkinter as tk
+from tkinter import ttk
 import db
 
 db.restoreTable()
-# db.addStudent("Test", "One", "testone@gmail.com", date(2026, 11, 15))
 
-# students = db.getAllStudents()
-# for student in students:
-#     print(student)
+#Every time user added, table is redrawn (ie db.getAllUsers() called)
+def draw_table():
+    students = db.getAllStudents()
+    for student in students:
+        tree.insert("", tk.END, values=student)
+    tree.pack(fill="both", expand=True)
 
-# db.updateStudentEmail(4, "onetest@gmail.com")
+# def get_selected_row():
+#     selected = tree.focus()
+#     if selected:
+#         row = tree.item(selected)
+#message box when email updated or when a student is deleted
+def add_student():
+    #tree.insert()
+    pass
 
-# students = db.getAllStudents()
-# print("\n")
-# for student in students:
-#     print(student)
+window = tk.Tk()
+window.title("")
+window.config(padx=50, pady=50)
 
-#messagebox before delete
-# db.deleteStudent(4)
-# print("\n")
-# students = db.getAllStudents()
-# for student in students:
-#     print(student)
+columns = ("student_id", "first_name", "last_name", "email", "enrollment_date")
+tree = ttk.Treeview(window, columns=columns, show="headings")
+
+tree.heading("student_id", text="Student id")
+tree.heading("first_name", text="First name")
+tree.heading("last_name", text="Last name")
+tree.heading("email", text="Email")
+tree.heading("enrollment_date", text="Enrollment date")
+
+draw_table()
+
+#Add new Student
+# new_student_label = tk.Label(text="Student Full Name:")
+# new_student_entry = tk.Entry(width=21)
+
+
+
+window.mainloop()
 
 db.close()

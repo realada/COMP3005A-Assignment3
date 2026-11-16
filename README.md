@@ -2,7 +2,9 @@
 
 Name: Chizurum Oluigbo\
 Student #: 101361390\
-SECTION: COMP3005A
+SECTION: COMP3005A\
+
+Link to video description: 
 
 ## Setting up Postgres connection
 - In postgres, create a database called assignment3
@@ -12,4 +14,5 @@ SECTION: COMP3005A
 - Copy info in .env.example into a .env file and replace placeholders with your information
 
 ## Running the application
-- 
+- Ensure you're in the COMP3005A-Assignment3 folder
+- In terminal, run python app\app.py
