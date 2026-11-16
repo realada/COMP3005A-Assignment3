@@ -8,6 +8,8 @@ db.restoreTable()
 
 #Every time user added, table is redrawn (ie db.getAllUsers() called)
 #message box when email updated or to ask if user should be student is deleted
+
+# FUNCTIONS
 def draw_table():
     for row in tree.get_children():
         tree.delete(row)
@@ -53,10 +55,27 @@ def add_student():
 
 def delete_student():
     row = get_selected_row()
-    student_id = row[0]
-    db.deleteStudent(student_id=student_id)
+    if row is None:
+        messagebox.showinfo("No selection", "Please select a student first.")
+        return
+    
+    student_id = int(row[0])
+    if not messagebox.askyesno("Confirm", f"Delete student {row[1]}?"):
+        return
+    try:
+        deleted = db.deleteStudent(student_id=student_id)
+    except Exception as e:
+        messagebox.showerror("Could not delete", str(e))
+
+    if not deleted:
+        messagebox.showinfo("Not found", "That student no longer exists.")
+    
     draw_table()
 
+
+
+
+# App GUI
 window = tk.Tk()
 window.title("")
 window.config(padx=50, pady=50)
