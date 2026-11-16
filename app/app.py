@@ -4,22 +4,28 @@ from tkinter import ttk, messagebox, simpledialog
 from tkcalendar import DateEntry
 import db
 
+# drops the students table if it already exists then creates it each time this program is run
 db.restoreTable()
 
-#Every time user added, table is redrawn (ie db.getAllUsers() called)
-#message box when email updated or to ask if user should be student is deleted
-
 # FUNCTIONS
+# deletes the already existing rows of the treeview
+# then inserts each student tuple from the list returned from db.getAllstudents() into the treeview
 def draw_table():
     for row in tree.get_children():
         tree.delete(row)
     for student in db.getAllStudents():
         tree.insert("", tk.END, values=student)
 
+# gets the date from the calendar object created using tkcalendar which is in the yyyy-mm-dd format and matches the expected datetime.date() object type
+# adds default date drop down object to the date label showing the current date
 def show_date():
     selected = calendar.get_date()
     date_label.config(text=f"Selected Date: {selected}")
 
+# gets the selected row from the treeview
+# if no row selected, it returns none
+# converts the list of values from the row into a tuple
+# returns the row
 def get_selected_row():
     selected = tree.selection()
 
@@ -30,10 +36,18 @@ def get_selected_row():
     print(row)
     return row
 
+# handles closing the connection when the program is exited
+# then destroying the window
 def on_close():
     db.close()
     window.destroy()
 
+# Gets the first name, last name, email, and enrollment dates from the entries in the form
+# Checks if any of the entries are empty, informs the user of the error, then returns
+# tries adding a new student to the students table using the info gotten from the entries as arguments
+# if the email already exists in the table, it returns the error gotten from db.addStudent() and deletes the text from the entry objects then returns
+# Returns an exception if the db.addStudent() operation fails
+#redraws the table
 def add_student():
     first_name = fname_entry.get().strip()
     last_name = lname_entry.get().strip()
@@ -59,6 +73,16 @@ def add_student():
     email_entry.delete(0, tk.END)
     draw_table()
 
+# gets the selected row tuple and if get_selected_row() returns None a message box pops up informing the user to select a student from the treeview first
+# gets the student_id from the tuple and converts to an int
+# a simple dialogue box pops with an entry for the new email
+# Returns if user clicks cancel instead of OK
+# checks if the new_email entry was empty and shows a message box informing the user the email can't be empty
+# A message box pops up asking the user if they want to go ahead with the update_email() operation and returns if no
+# tries the db.updateStudentEmail() function using the student_id and new_email arguments
+# gives an error if the email already exists
+# informs the user if the db.updateStudentEmail() function fails then returns
+# redraws the table
 def update_email():
     row = get_selected_row()
     if row is None:
@@ -100,6 +124,14 @@ def update_email():
     email_entry.delete(0, tk.END)
     draw_table()
 
+
+# gets the selected row tuple and if get_selected_row() returns None a message box pops up informing the user to select a student from the treeview first
+# gets the student_id from the tuple and converts to an int
+# message box pops up asking the user if they want to go ahead with the delete operation
+# tries to delete the student with db.deleteStudent() using the student_id as an argument
+# a message box pops up telling the user if the operation fails
+# if deleted returns false, informs the user the student no longer exists
+# redraws the table
 def delete_student():
     row = get_selected_row()
     if row is None:
@@ -132,6 +164,7 @@ window.config(padx=50, pady=50)
 table_title = tk.Label(text="STUDENTS", font=("Arial", 20))
 table_title.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
+# Handles drawing the treeview on the window
 columns = ("student_id", "first_name", "last_name", "email", "enrollment_date")
 tree = ttk.Treeview(window, columns=columns, show="headings")
 
@@ -166,6 +199,7 @@ date_label.grid(row=5, column=0, sticky="e", pady=2)
 calendar = DateEntry(width=12, background="darkblue", foreground="white", borderwidth=2, date_pattern="yyyy-mm-dd")
 calendar.grid(row=5, column=1, sticky="w")
 
+# Buttons
 button_frame = tk.Frame(window)
 button_frame.grid(row=6, column=0, columnspan=2, pady=10)
 
@@ -178,6 +212,6 @@ update_email_button.grid(row=0, column=1, padx=2)
 delete_student_button = tk.Button(button_frame, text="Delete student", command=delete_student, width=20)
 delete_student_button.grid(row=0, column=2, padx=2)
 
-
+# Protocol for when the window is exited which calls on_close() command
 window.protocol("WM_DELETE_WINDOW", on_close)
 window.mainloop()

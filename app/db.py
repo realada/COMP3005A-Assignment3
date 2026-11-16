@@ -7,6 +7,7 @@ from datetime import date
 
 load_dotenv()
 
+# Function that returns the connection from postreges with environment variables gotten from .env file
 def get_connection():
     return psycopg2.connect(
         host=os.getenv("DB_HOST", "localhost"),
@@ -18,6 +19,8 @@ def get_connection():
 
 conn = get_connection()
 
+# Gets the students.sql file from parent folder and executes the query in postreges database
+# students.sql drops students table if it exists and creates a new table
 def restoreTable() -> None:
     sql = (Path(__file__).parent.parent / "students.sql").read_text()
     try:
@@ -29,6 +32,7 @@ def restoreTable() -> None:
         raise
 
 # getAllStudents(): Retrieves and displays all records from the students table.
+# returns a list of the tuples which containing all the students and their info ordered by their student_id
 def getAllStudents() -> list[tuple]:
     with conn.cursor() as cur:
         cur.execute("SELECT * FROM students ORDER BY student_id")
@@ -37,6 +41,7 @@ def getAllStudents() -> list[tuple]:
     return rows
 
 # addStudent(first_name, last_name, email, enrollment_date): Inserts a new student record into the students table.
+# errors.UniqueViolation from psycopg2 handles checking if the user already exists
 def addStudent(first_name: str, last_name: str, email: str, enrollment_date: date | None = None) -> None:
     try:
         with conn.cursor() as cur:
@@ -54,6 +59,8 @@ def addStudent(first_name: str, last_name: str, email: str, enrollment_date: dat
         raise
 
 # updateStudentEmail(student_id, new_email): Updates the email address for a student with the specified student_id.
+# returns a bool representing if the table was updated or not
+# If it was updated cur.rowcount > 0 returns true as cur.rowcount is the number of rows in the relation that was updated
 def updateStudentEmail(student_id: int, new_email: str) -> bool:
     try:
         with conn.cursor() as cur:
@@ -74,6 +81,7 @@ def updateStudentEmail(student_id: int, new_email: str) -> bool:
         raise
 
 # deleteStudent(student_id): Deletes the record of the student with the specified student_id.
+# returns a bool representing if student was deleted or not
 def deleteStudent(student_id: int) -> bool:
     try:
         with conn.cursor() as cur:
@@ -89,5 +97,6 @@ def deleteStudent(student_id: int) -> bool:
         conn.rollback()
         raise
 
+#handles closing the connection
 def close():
     conn.close()
